@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3 Upload App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #status {
+            margin-top: 20px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: #f3f3f3;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #28a745;
+            width: 0;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload File to S3</h1>
+        <input type="file" id="fileInput" />
+        <br><br>
+        <button id="uploadButton">Upload to S3</button>
+        <div id="status"></div>
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div id="progressText" class="progress-text"></div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput');
+            const status = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+
+            if (fileInput.files.length > 0) {
+                const filePath = fileInput.files[0].path;
+                
+                ipcRenderer.invoke('upload-file', filePath)
+                    .then((location) => {
+                        status.innerHTML = `<p style="color:green;">File uploaded successfully! URL: <a href="${location}" target="_blank">${location}</a></p>`;
+                        progressBar.style.width = '100%';
+                        progressText.textContent = 'Upload complete';
+                    })
+                    .catch((error) => {
+                        status.innerHTML = `<p style="color:red;">Error uploading file: ${error.message}</p>`;
+                        progressBar.style.width = '0%';
+                        progressText.textContent = 'Upload failed';
+                    });
+            } else {
+                status.innerHTML = '<p style="color:red;">No file selected.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
