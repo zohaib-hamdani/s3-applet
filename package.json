@@ -26,7 +26,10 @@
       "target": "nsis"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Utility"
     }
   },
@@ -35,6 +38,7 @@
     "electron-builder": "^24.0.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.1122.0"
+    "aws-sdk": "^2.1122.0",
+    "dotenv": "^16.4.5"
   }
 }
